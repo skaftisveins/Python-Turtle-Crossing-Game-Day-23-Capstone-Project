@@ -11,29 +11,31 @@ screen.title('Turtle Crossing - Capstone Project')
 screen.tracer(0)
 
 player = Player()
-car = CarManager()
+car_manager = CarManager()
 scoreboard = Scoreboard()
 
 screen.listen()
-screen.onkeypress(player.move, "Up")
+screen.onkeypress(player.go_up, "Up")
 
 game_is_on = True
 while game_is_on:
     time.sleep(0.1)
     screen.update()
-    car.drive_across()
 
-    # Detect if player passed a level
-    if player.ycor() > 260:
-        car.next_level()
-        player.refresh()
-        scoreboard.update_scoreboard()
+    car_manager.create_car()
+    car_manager.move_cars()
 
     # Detect if player collides with a car object
-    if player.distance(car) < 15:
-        game_is_on = False
-        scoreboard.game_over()
+    for car in car_manager.all_cars:
+        if car.distance(player) < 20:
+            game_is_on = False
+            scoreboard.game_over()
 
+    # Detect successful crossing
+    if player.is_at_finish_line():
+        car_manager.next_level()
+        player.go_to_start()
+        scoreboard.increase_level()
 
 
 screen.exitonclick()
